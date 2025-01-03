@@ -155,10 +155,10 @@ const Profile = () => {
   };
 
   const togglePopup = () => {
-    setShowPopup(!showPopup);
-    console.log(showPopup);
+    setShowPopup(!showPopup);  
+     
   };
-
+  
   const toggleCreatePopup = () => {
     setShowCreatePopup(!showCreatePopup);
     setNewFolderName('');
@@ -439,7 +439,7 @@ const Profile = () => {
       {/* <h1>Access Type: {accessType ? accessType : 'Access Type Not Provided'}</h1> */}
       {/* Your component UI */}
     </div>
-        {showPopup && <SharePopup onClose={togglePopup} />}
+    {showPopup && <SharePopup closePopup={() => setShowPopup(false)} />}
       </div>
     </div>
     

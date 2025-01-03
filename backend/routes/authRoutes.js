@@ -33,19 +33,21 @@ router.get('/user', authenticate, async (req, res) => {
 });
 
 
+const inviterEmail = process.env.EMAIL_USER; // Use the email from the environment
+
 router.post('/send-invite', [
   body('email').isEmail().withMessage('Invalid email address'),
   body('accessType').isIn(['Edit', 'View']).withMessage('Invalid access type'),
-  body('inviter').notEmpty().withMessage('Inviter email is required'),
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { email, accessType, inviter } = req.body;
+
+  const { email, accessType } = req.body;
 
   try {
-    await sendEmailInvite(email, accessType, inviter);
+    await sendEmailInvite(email, accessType, inviterEmail); // Use static inviter email
     res.status(200).json({ message: `Invite sent to ${email}` });
   } catch (error) {
     res.status(500).json({ message: 'Failed to send invite.', error: error.message });
