@@ -1,0 +1,392 @@
+/* General Page Styles */
+.formPage {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  transition: background-color 0.3s, color 0.3s;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--divider-color);
+  background-color: var(--header-bg);
+}
+
+.formNameInput {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.navButtons {
+  display: flex;
+  gap: 15px;
+}
+
+.navButtonText, .navButtonText2 {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.navButtonText {
+  background-color: transparent;
+  border: 1px solid #627dff; /* Blue border for Flow */
+  color: #627dff; /* Blue text for Flow */
+}
+
+.navButtonText:hover {
+  background-color: #627dff; /* Blue background on hover */
+  color: #fff; /* White text on hover */
+}
+
+.navButtonText2 {
+  background-color: transparent;
+  border: 1px solid #333; /* Default dark border for Response */
+  color: #333; /* Default dark text for Response */
+}
+
+.navButtonText2:hover {
+  background-color: #333; /* Dark background on hover */
+  color: #fff; /* White text on hover */
+}
+
+/* Light and Dark theme styles for Response button */
+.navButtonText2.light {
+  background-color: #ffffff; /* Light theme Response button */
+  color: #000; /* Black text for light theme */
+}
+
+.navButtonText2.dark {
+  background-color: #333; /* Dark theme Response button */
+  color: #fff; /* White text for dark theme */
+}
+
+.navButtonText2.light:hover {
+  background-color: #f0f0f0; /* Light hover effect */
+}
+
+.navButtonText2.dark:hover {
+  background-color: #555; /* Dark hover effect */
+}
+
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+}
+
+.toggleContainer {
+  width: 50px;
+  height: 24px;
+  background-color: #ddd;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.toggle {
+  width: 22px;
+  height: 22px;
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  transition: all 0.3s ease;
+}
+
+.toggle.active {
+  left: 26px;
+  background-color: #4caf50;
+}
+
+.toggleText {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+/* Main Content */
+.content {
+  display: flex;
+  flex-grow: 1;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  padding: 15px;
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--divider-color);
+}
+
+.section {
+  margin-bottom: 10px;
+}
+
+.sidebarButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px; /* Space between icon and text */
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 0.1px solid black;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: var(--button-bg-color); /* Using a CSS variable for background color */
+  color: var(--button-text-color); /* Color of the text in the button */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-left: 2px;
+}
+
+.sidebarButton:hover {
+  border: 1px solid var(--button-hover-border);
+  background-color: #ddd;
+}
+
+/* Main Content Area */
+.mainContent {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color);
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.actionButton {
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.saveButton {
+  background-color: #28a745;
+  color: #fff;
+}
+
+
+/* Share Button Styles */
+.shareButton {
+  background-color: gray;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.shareButton.active {
+  background-color: #007bff; /* Blue color for active state */
+}
+
+.shareButton.disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.shareButton:hover:not(.disabled) {
+  background-color: #0056b3; /* Darker blue when hovered */
+  cursor: pointer;
+}
+
+.closeButton {
+  background: none;
+  color: #ff0000;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Form Preview */
+.formPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center fields horizontally */
+  justify-content: center; /* Center fields vertically */
+  gap: 15px;
+  height: 100%; /* Take full height of the container */
+}
+
+.previewFieldWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  height: 60px; /* Increased height to accommodate start flag and trash icon */
+}
+
+.previewField {
+  height: 40px; /* Adjust height */
+  padding: 5px 4px; /* Adjust padding */
+  font-size: 14px; /* Adjust font size */
+  text-align: center; /* Center the text */
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%; /* Full width of the container */
+  background-color: var(--input-bg-color); /* Dynamic background color */
+  color: var(--input-text-color); /* Text color */
+}
+
+/* Field Names on top of Input Fields */
+.previewFieldWrapper div {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+/* Trash icon positioning */
+.removeIcon {
+  color: red;
+  cursor: pointer;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 18px;
+  
+}
+
+.removeIcon:hover {
+  color: darkred;
+}
+
+.flagIcon {
+  position: absolute;
+  top: 3px; /* Adjust as needed */
+  left: -12px; /* Adjust as needed */
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-color); /* Adjust based on theme */
+}
+
+.startFlag {
+  position: absolute;
+  top: 110px; /* Adjust the top value to move it down or up as needed */
+  left: 40%; /* Adjust left value for horizontal positioning */
+  transform: translateX(-50%);
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: var(--primary-text-color); /* Adjust for theme */
+}
+
+.startFlag span {
+  color: var(--text-color); /* Adjust for theme */
+  font-size: 16px;
+}
+
+
+
+
+/* Input Field Wrapper */
+.inputWrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.fieldNameRight {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Dark and Light Theme */
+.dark {
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --header-bg: #1e1e1e;
+  --sidebar-bg: #2e2e2e;
+  --divider-color: #333333;
+  --button-bg: #444;
+  --button-hover-bg: #555;
+  --button-hover-border: #666;
+  --button-text: #ffffff;
+  --preview-bg: #2e2e2e;
+  --primary-text-color: #fff;
+}
+
+.light {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --header-bg: #f0f0f0;
+  --sidebar-bg: #f8f8f8;
+  --divider-color: #dddddd;
+  --button-bg: #e0e0e0;
+  --button-hover-bg: #d0d0d0;
+  --button-hover-border: #c0c0c0;
+  --button-text: #000000;
+  --preview-bg: #ffffff;
+  --primary-text-color: #000;
+}
+
+.previewField:focus {
+  transform: scale(1.05); /* Slightly enlarge for focus effect */
+  outline: none;
+  border: 2px solid var(--focus-color);
+}
+.buttonIcon {
+  font-size: 16px;
+  color: orange; /* Set icon color to orange */
+}
+
+.sidebarButton:hover .buttonIcon {
+  color: darkorange; /* Change icon color to darkorange on hover */
+}
+body.light {
+  background-color: #fff;
+  color: #000;
+}
+
+body.dark {
+  background-color: #333;
+  color: #fff;
+}
+
+body.light .sidebarButton {
+  background-color: #fff; /* White background in light mode */
+  color: #000; /* Black text color in light mode */
+}
+
+/* Define styles for dark mode */
+body.dark .sidebarButton {
+  background-color: #333; /* Dark background in dark mode */
+  color: #fff; /* White text color in dark mode */
+}
+/* For light mode */
+.lightField {
+  background-color: #333; /* Lighter background color */
+  border-color: #333; /* Lighter border color */
+  color: #000; /* Dark text color for contrast */
+}
+
+/* For dark mode */
+.darkField {
+  background-color: #333; /* Darker background for contrast */
+  border-color: #444; /* Slightly darker border */
+  color: #fff; /* White text color for dark theme */
+}

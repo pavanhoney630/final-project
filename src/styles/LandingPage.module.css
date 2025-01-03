@@ -1,0 +1,183 @@
+/* General Landing Page Styling */
+.landingPage {
+  width: 100vw;
+  min-height: 70vh;
+  margin: 0;
+  padding: 0;
+  background-color: #1a1a1a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 72px;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logoImage {
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+}
+
+.logoText {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 15px;
+}
+
+.signInButton,
+.createButton {
+  padding: 8px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.signInButton {
+  padding: 8px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: transparent; /* Transparent background */
+  border: 1px solid #627dff; /* Blue border */
+  color: #627dff; /* Blue text */
+  transition: background-color 0.3s, color 0.3s; /* Smooth hover transition */
+  font-weight: bold;
+}
+
+.signInButton:hover {
+  background-color: rgba(98, 125, 255, 0.1); /* Light blue background on hover */
+  color: #627dff; /* Keep the text blue */
+}
+
+.createButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.createButton:hover {
+  background-color: #0056b3;
+}
+
+/* Body Section */
+.imageContainer {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.landingImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Footer Section */
+/* Footer Section */
+.footer {
+  background-color: #1b1b1b;
+  padding: 40px 20px;
+  margin-top: -150px;
+}
+
+.footerContainer {
+  display: flex;
+  justify-content: space-between; /* Distribute space between logo and links */
+  align-items: center; /* Align items in the center horizontally */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo Section */
+.footerLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -90px;
+}
+
+.footerLogoImage {
+  width: 36px;
+  height: 36px;
+  margin-top: -30px;
+}
+
+.footerLogoText {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.footerMadeBy {
+  font-size: 14px;
+  color: #b0b0b0;
+  margin-top: 5px;
+}
+
+.footerMadeBy span {
+  display: block;
+}
+
+/* Links Section */
+.footerLinks {
+  display: flex;
+  flex: 1;
+  justify-content: space-evenly; /* Distribute space evenly between the columns */
+  gap: 50px; /* Adjust this gap for more or less spacing between columns */
+}
+
+.footerLinks div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footerLinks h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.footerLinks span {
+  margin-bottom: 8px;
+  color: #b0b0b0;
+  cursor: pointer;
+}
+
+.footerLinks span:hover {
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footerContainer {
+    flex-direction: column; /* Stack sections vertically on smaller screens */
+    align-items: flex-start; /* Align items to the left */
+    gap: 20px; /* Add space between sections */
+  }
+
+  .footerLinks {
+    flex-direction: column; /* Stack columns vertically */
+    gap: 20px; /* Space between columns on mobile */
+  }
+}
+
+
+

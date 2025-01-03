@@ -1,0 +1,268 @@
+:root {
+  --bg-dark: #1e1e1e;
+  --bg-light: #ffffff;
+  --text-dark: #ffffff;
+  --text-light: #000000;
+  --button-dark: #2d2d2d;
+  --button-light: #e0e0e0;
+  --primary-color: #007bff;
+  --hover-color: #0056b3;
+  --save-button: #28a745;
+  --share-button: #0056b3;
+  --close-button: #dc3545;
+}
+
+[data-theme="dark"] {
+  --bg-color: var(--bg-dark);
+  --text-color: var(--text-dark);
+  --button-bg: var(--button-dark);
+  --button-text: var(--text-dark);
+}
+
+[data-theme="light"] {
+  --bg-color: var(--bg-light);
+  --text-color: var(--text-light);
+  --button-bg: var(--button-light);
+  --button-text: var(--text-light);
+}
+
+.container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--button-bg);
+}
+
+.navButtons {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.navButtonText, .navButtonText2 {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.navButtonText {
+  background-color: transparent;
+  border: 1px solid #627dff; /* Blue border for Flow */
+  color: #627dff; /* Blue text for Flow */
+}
+
+.navButtonText:hover {
+  background-color: #627dff; /* Blue background on hover */
+  color: #fff; /* White text on hover */
+}
+
+.navButtonText2 {
+  background-color: transparent;
+  border: 1px solid gray; /* Default dark border for Response */
+  color:gray; /* Default dark text for Response */
+}
+
+.rightButtons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+}
+
+.activeTheme {
+  color: gray; /* Blue color for active theme */
+  font-weight: bold;
+}
+
+.inactiveTheme {
+  color: gray; /* Gray color for inactive theme */
+}
+
+.glideButton {
+  width: 40px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #ccc; /* Default gray background for the toggle */
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.glideButton .glideActive {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: blue; /* Active state circle is blue */
+  border-radius: 50%;
+  transition: left 0.3s ease;
+}
+
+.glideButton .glideInactive {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: gray; /* Inactive state circle is gray */
+  border-radius: 50%;
+  transition: right 0.3s ease;
+}
+
+.glideButton.active {
+  background-color: blue; /* Background color when active */
+}
+
+.glideButton.inactive {
+  background-color: #ccc; /* Background color when inactive */
+}
+
+.toggleInput {
+  display: none; /* Hide the checkbox input */
+}
+
+.shareButton {
+  background-color: var(--share-button);
+  color: var(--text-color);
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.saveButton {
+  background-color: var(--save-button);
+  color: var(--text-color);
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.shareButton:hover {
+  background-color: blue;
+}
+
+.saveButton:hover {
+  background-color: #218838;
+}
+
+.closeButton {
+  background-color: transparent;
+  color: var(--text-color);
+  color: #c82333;
+  border: none;
+  padding: 8px 26px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.closeButton:hover {
+  background-color: #c82333;
+}
+
+.main {
+  flex-grow: 1;
+  padding: 16px;
+}
+
+.formsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.formButton {
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.formButton:hover {
+  background-color: var(--hover-color);
+}
+
+.chartContainer {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.error {
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.spinner {
+  border: 4px solid var(--button-bg);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.backButton {
+  margin-top: 16px;
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.backButton:hover {
+  background-color: var(--hover-color);
+}
+
+.footer {
+  text-align: center;
+  padding: 16px;
+  border-top: 1px solid var(--button-bg);
+  font-size: 14px;
+  color: var(--text-color);
+}
