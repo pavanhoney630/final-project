@@ -73,7 +73,7 @@ const ForgotPassword = () => {
         return;
       }
   
-      const response = await fetch('http://localhost:5000/auth/update-user', {
+      const response = await fetch('REACT_APP_API_URL/auth/update-user', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

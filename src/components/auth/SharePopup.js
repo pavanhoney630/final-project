@@ -28,7 +28,7 @@ const SharePopup = ({ closePopup, workspaceId, userEmail,  }) => {
   
     try {
       const response = await api.post(
-        'http://localhost:5000/auth/generate-link',
+        'REACT_APP_API_URL/auth/generate-link',
         {
           workspaceId,
           accessType,
@@ -61,7 +61,7 @@ const SharePopup = ({ closePopup, workspaceId, userEmail,  }) => {
       return;
     }
     try {
-      const response = await api.post('http://localhost:5000/auth/send-invite', {
+      const response = await api.post('REACT_APP_API_URL/auth/send-invite', {
         email,        // Email to send the invite
         accessType,   // Access type (View/Edit)
         workspaceId,  // Workspace ID for the invite
