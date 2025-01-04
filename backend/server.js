@@ -9,7 +9,7 @@ const workspaceRoutes = require('./routes/WorkspaceRoutes'); // Import workspace
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow only the frontend domain
+  origin: ['http://localhost:3000', 'https://final-project-g2fysas1w-sivalingam-pavankalyans-projects.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
 };
