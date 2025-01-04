@@ -10,29 +10,27 @@ const app = express();
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // Allow non-browser requests (mobile, curl, etc.)
+    if (!origin) return callback(null, true); // Allow non-browser requests like curl or mobile apps
 
-    // Regex to allow any subdomain under 'final-project-<anything>-sivalingam-pavankalyans-projects.vercel.app'
-    const regex = /^https:\/\/final-project-[\w-]+-sivalingam-pavankalyans-projects\.vercel\.app$/;
+    // Regex to match any subdomain under final-project-<anything>-sivalingam-pavankalyans-projects.vercel.app
+    const regex = /^https:\/\/final-project-[a-zA-Z0-9-]+-sivalingam-pavankalyans-projects\.vercel\.app$/;
 
-    // Check if the origin matches the pattern
     if (regex.test(origin)) {
-      callback(null, true); // Allow the origin
+      callback(null, true); // Allow the origin if it matches the pattern
     } else {
-      callback(new Error('Not allowed by CORS')); // Block the origin if not allowed
+      callback(new Error('Not allowed by CORS')); // Block other origins
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
-  credentials: true, // Allow credentials (cookies)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  credentials: true, // Include credentials (cookies)
 };
-// Apply CORS middleware
+
+// Enable CORS with the specified options
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
 
-
-
-
+// Handling preflight OPTIONS requests
+app.options('*', cors(corsOptions)); // Handle OPTIONS request
 // Middleware
 
 app.use(bodyParser.json()); // Middleware to parse incoming JSON requests
