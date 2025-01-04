@@ -8,28 +8,24 @@ const workspaceRoutes = require('./routes/WorkspaceRoutes'); // Import workspace
 
 const app = express();
 
-
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // Allow non-browser requests
-    const allowedDomains = [
-      'http://localhost:3000',
-      'https://final-project-pi-blond.vercel.app',
-    ];
-    const isAllowed =
-      allowedDomains.some((domain) => origin.startsWith(domain)) ||
-      /^https:\/\/final-project-[\w\d]+-sivalingam-pavankalyans-projects\.vercel\.app$/.test(origin);
-
-    if (isAllowed) {
-      callback(null, true);
+    if (!origin) return callback(null, true); // Allow requests with no origin (e.g., from mobile apps or curl)
+    
+    // Regex to match any subdomain under final-project-[anything].vercel.app
+    const regex = /^https:\/\/final-project-[\w\d]+-sivalingam-pavankalyans-projects\.vercel\.app$/;
+    
+    if (regex.test(origin)) {
+      callback(null, true); // Allow the origin if it matches the regex
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error('Not allowed by CORS')); // Block the origin if it doesn’t match
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
+  credentials: true, // Allow credentials if needed
 };
+
 
 // Apply CORS middleware
 app.use(cors(corsOptions));
