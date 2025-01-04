@@ -8,22 +8,29 @@ const workspaceRoutes = require('./routes/WorkspaceRoutes'); // Import workspace
 
 const app = express();
 
+const cors = require('cors');
+
 const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://final-project-g2fysas1w-sivalingam-pavankalyans-projects.vercel.app',
-      'https://final-project-65xvdmimx-sivalingam-pavankalyans-projects.vercel.app',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    const allowedDomains = [
+      'http://localhost:3000', // Local development
+      'https://final-project-pi-blond.vercel.app', // Production frontend
     ];
-    if (!origin || allowedOrigins.includes(origin)) {
+
+    if (allowedDomains.some((domain) => origin.startsWith(domain))) {
       callback(null, true); // Allow the origin
     } else {
-      callback(new Error('Not allowed by CORS')); // Reject the origin
+      callback(new Error('Not allowed by CORS')); // Block the origin
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+  credentials: true, // Include credentials if needed
 };
+
 
 
 // Middleware
