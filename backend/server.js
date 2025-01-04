@@ -10,23 +10,22 @@ const app = express();
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // Allow requests with no origin (e.g., from mobile apps or curl)
-    
-    // Regex to match any subdomain under final-project-[anything].vercel.app
-    const regex = /^https:\/\/final-project-[\w\d]+-sivalingam-pavankalyans-projects\.vercel\.app$/;
-    
+    if (!origin) return callback(null, true); // Allow non-browser requests (mobile, curl, etc.)
+
+    // Regex to allow any subdomain under 'final-project-<anything>-sivalingam-pavankalyans-projects.vercel.app'
+    const regex = /^https:\/\/final-project-[\w-]+-sivalingam-pavankalyans-projects\.vercel\.app$/;
+
+    // Check if the origin matches the pattern
     if (regex.test(origin)) {
-      callback(null, true); // Allow the origin if it matches the regex
+      callback(null, true); // Allow the origin
     } else {
-      callback(new Error('Not allowed by CORS')); // Block the origin if it doesn’t match
+      callback(new Error('Not allowed by CORS')); // Block the origin if not allowed
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // Allow credentials if needed
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+  credentials: true, // Allow credentials (cookies)
 };
-
-
 // Apply CORS middleware
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Handle preflight requests
