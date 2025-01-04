@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
+  baseURL: process.env.REACT_APP_API_URL || 'https://final-project-z5je.vercel.app',
   headers: { 'Content-Type': 'application/json' },
-  
 });
+
 console.log('API URL:', process.env.REACT_APP_API_URL);
 axios.interceptors.response.use(
   (response) => {
@@ -27,7 +27,7 @@ axios.interceptors.response.use(
 );
 
 export const signUpUser = async (credentials) => {
- return api.post('/signup', credentials);
+ return api.post('/auth/signup', credentials);
 };
 
 
