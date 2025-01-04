@@ -28,7 +28,9 @@ const Profile = () => {
 
   // Fetch user details from API and store them in localStorage
   // const token = localStorage.getItem('token');
- 
+  useEffect(() => {
+    console.log('User email:', userEmail);
+  }, [userEmail]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {

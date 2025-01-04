@@ -154,7 +154,7 @@ const Signup = () => {
             onChange={handleInputChange}
           />
 
-          <button type="submit" className={styles.signupButton}>
+          <button type="submit" className={styles.signupButton} disabled={isLoading}>
             Sign Up
           </button>
           {error && <p className={styles.errorMessage}>{error}</p>}
