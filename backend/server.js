@@ -8,33 +8,38 @@ const workspaceRoutes = require('./routes/WorkspaceRoutes'); // Import workspace
 
 const app = express();
 
-const cors = require('cors');
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
+    if (!origin) return callback(null, true); // Allow non-browser requests
     const allowedDomains = [
-      'http://localhost:3000', // Local development
-      'https://final-project-pi-blond.vercel.app', // Production frontend
+      'http://localhost:3000',
+      'https://final-project-pi-blond.vercel.app',
     ];
+    const isAllowed =
+      allowedDomains.some((domain) => origin.startsWith(domain)) ||
+      /^https:\/\/final-project-[\w\d]+-sivalingam-pavankalyans-projects\.vercel\.app$/.test(origin);
 
-    if (allowedDomains.some((domain) => origin.startsWith(domain))) {
-      callback(null, true); // Allow the origin
+    if (isAllowed) {
+      callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS')); // Block the origin
+      callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
-  credentials: true, // Include credentials if needed
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 };
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
+
 
 
 
 // Middleware
-app.use(cors(corsOptions)); // Apply the CORS middleware with specific options
+
 app.use(bodyParser.json()); // Middleware to parse incoming JSON requests
 
 // Request Logging Middleware
