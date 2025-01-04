@@ -9,10 +9,22 @@ const workspaceRoutes = require('./routes/WorkspaceRoutes'); // Import workspace
 const app = express();
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://final-project-g2fysas1w-sivalingam-pavankalyans-projects.vercel.app'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://final-project-g2fysas1w-sivalingam-pavankalyans-projects.vercel.app',
+      'https://final-project-65xvdmimx-sivalingam-pavankalyans-projects.vercel.app',
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow the origin
+    } else {
+      callback(new Error('Not allowed by CORS')); // Reject the origin
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
+
 
 // Middleware
 app.use(cors(corsOptions)); // Apply the CORS middleware with specific options
