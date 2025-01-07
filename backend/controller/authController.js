@@ -5,7 +5,10 @@ const jwt = require('jsonwebtoken');
 
 
 const signup = async (req, res) => {
+
     const { username, email, password,confirmPassword } = req.body;
+    const { username, email, password, confirmPassword } = req.body;
+>>>>>>> c0687879ddcbfe5fe9ca5b497ae6042b5825db98
   
     // Check if all fields are provided
     if (!username || !email || !password ) {

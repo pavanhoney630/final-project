@@ -9,14 +9,13 @@ const workspaceRoutes = require('./routes/WorkspaceRoutes'); // Import workspace
 const app = express();
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://final-project-g2fysas1w-sivalingam-pavankalyans-projects.vercel.app'],
+  origin: 'http://localhost:3000', // Allow only the frontend domain
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
 };
 
-
 // Middleware
-app.use(cors(corsOptions)); // Apply the CORS middleware with specific options
+
 app.use(bodyParser.json()); // Middleware to parse incoming JSON requests
 
 // Request Logging Middleware
