@@ -27,7 +27,7 @@ axios.interceptors.response.use(
 );
 
 export const signUpUser = async (credentials) => {
- return api.post('/auth/signup', credentials);
+ return api.post('/signup', credentials);
 };
 
 
