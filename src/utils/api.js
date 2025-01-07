@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
   headers: { 'Content-Type': 'application/json' },
   
 });
@@ -27,7 +27,7 @@ axios.interceptors.response.use(
 );
 
 export const signUpUser = async (credentials) => {
- return api.post('/signup', credentials);
+ return api.post('/auth/signup', credentials);
 };
 
 
