@@ -27,7 +27,7 @@ axios.interceptors.response.use(
 );
 
 export const signUpUser = async (credentials) => {
- return api.post('/auth/signup', credentials);
+ return api.post('/signup', credentials);
 };
 
 
@@ -37,7 +37,7 @@ export const getUserProfile = async () => {
   
   if (!token) {
     // If no token, redirect to login
-    window.location.href = '/auth/login';
+    window.location.href = '/login';
     return;
   }
 
