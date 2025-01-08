@@ -39,7 +39,7 @@ const Login = () => {
   
     try {
       console.log('Form Data:', formData);
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/login', { email, password });
       const { token, username, userId } = response.data;
 
       // Store token and username in localStorage
