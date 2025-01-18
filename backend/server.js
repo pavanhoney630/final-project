@@ -8,25 +8,25 @@ const workspaceRoutes = require('./routes/WorkspaceRoutes'); // Import workspace
 
 const app = express();
 
-const allowedOrigins = ['https://final-project-api-dun.vercel.app','https://final-project-three-beige.vercel.app','http://localhost:3000'];
+const allowedOrigins = ['https://final-project-api-dun.vercel.app','https://final-project-three-beige.vercel.app'];
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true,
+// };
 
 // Middleware
 
 app.use(bodyParser.json()); // Middleware to parse incoming JSON requests
-app.use(cors(corsOptions));
+app.use(cors(allowedOrigins));
 app.options('*', cors(corsOptions));
 
 // Request Logging Middleware
