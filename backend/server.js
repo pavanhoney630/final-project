@@ -8,7 +8,7 @@ const workspaceRoutes = require('./routes/WorkspaceRoutes'); // Import workspace
 
 const app = express();
 
-const allowedOrigins = ['https://final-project-api-dun.vercel.app','https://final-project-three-beige.vercel.app',];
+const allowedOrigins = ['https://final-project-api-dun.vercel.app','https://final-project-three-beige.vercel.app','http://localhost:3000'];
 
 const corsOptions = {
   origin: (origin, callback) => {

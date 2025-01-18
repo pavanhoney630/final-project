@@ -67,12 +67,7 @@ const Signup = () => {
       console.log('Form Data:', formData);
 
       // Make the API call
-      const response = await signUpUser({
-        username,
-        email,
-        password,
-        confirmPassword,
-      });
+      const response = await signUpUser(formData);
 
       // Log the API response
       console.log('Signup response:', response);

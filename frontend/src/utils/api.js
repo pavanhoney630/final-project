@@ -6,7 +6,7 @@ const api = axios.create({
   withCredentials: true, // Include credentials in cross-origin requests
 });
 
-console.log('API URL:', process.env.REACT_APP_API_URL);
+ 
 axios.interceptors.response.use(
   (response) => {
     // Return the response data directly (as you're expecting data from the server)
@@ -16,7 +16,7 @@ axios.interceptors.response.use(
     // If the error is due to unauthorized access (401), handle the logout
     if (error.response?.status === 401) {
       localStorage.removeItem('authToken');
-      window.location.href = '/auth/login'; // Redirect user to login page
+      window.location.href = '/login'; // Redirect user to login page
     }
 
     // Extract error message from the response data if present, or default to 'Something went wrong'
