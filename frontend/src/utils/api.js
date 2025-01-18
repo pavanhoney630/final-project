@@ -16,7 +16,7 @@ axios.interceptors.response.use(
     // If the error is due to unauthorized access (401), handle the logout
     if (error.response?.status === 401) {
       localStorage.removeItem('authToken');
-      window.location.href = '/login'; // Redirect user to login page
+      window.location.href = '/auth/login'; // Redirect user to login page
     }
 
     // Extract error message from the response data if present, or default to 'Something went wrong'
@@ -28,7 +28,7 @@ axios.interceptors.response.use(
 );
 
 export const signUpUser = async (credentials) => {
- return api.post('/signup', credentials);
+ return api.post('/auth/signup', credentials);
 };
 
 
