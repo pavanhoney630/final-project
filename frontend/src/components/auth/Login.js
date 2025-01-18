@@ -47,7 +47,7 @@ const Login = () => {
       localStorage.setItem('username', username); // Set the username as workspace name
       localStorage.setItem('userId', userId);
       setSuccess("Login successful!");
-      setTimeout(() => navigate("/profile?accessType=Edit"), 1000);
+      setTimeout(() => navigate("/profile"), 1000);
     } catch (err) {
       if (err.response) {
         setError(err.response.data.message || "Invalid email or password.");
