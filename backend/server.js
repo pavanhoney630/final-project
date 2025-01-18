@@ -27,6 +27,7 @@ const corsOptions = {
 
 app.use(bodyParser.json()); // Middleware to parse incoming JSON requests
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Request Logging Middleware
 app.use((req, res, next) => {
