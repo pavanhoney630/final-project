@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 
-const authenticate = (req, res, next) => {
+const authToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -13,7 +13,7 @@ const authenticate = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id;
+    req.user = decoded.id;
     next();
   } catch (error) {
     res.status(401).json({ message: 'Authentication failed, invalid token.' });
@@ -21,4 +21,4 @@ const authenticate = (req, res, next) => {
 };
 
 
-module.exports = authenticate;
+module.exports = {authToken};
