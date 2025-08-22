@@ -13,7 +13,7 @@ const createWorkspaceOnLogin = async (req, res) => {
     const user = await User.findById(userId);
 
 
-    if (!req.user|| req.user.id) {
+    if (!req.user.id|| req.user._id) {
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -50,7 +50,7 @@ const getAllWorkspaces = async (req, res) => {
     const { userId } = req.params; // logged-in userId
     const user = await User.findById(userId);
 
-    if (!req.user|| req.user.id) {
+    if (!req.user.id|| req.user._id) {
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -71,7 +71,7 @@ const getAllWorkspaces = async (req, res) => {
 const shareWorkspace = async (req, res) => {
   try {
     // ✅ Fix req.user check
-    if (!req.user) {
+    if (!req.user.id|| req.user._id) {
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -149,7 +149,7 @@ const shareWorkspace = async (req, res) => {
 
 const workspaceById = async (req, res) => {
   try {
-    if (!req.user) {
+    if (!req.user.id|| req.user._id) {
       return res.status(404).json({ message: "User not found" });
     }
 
