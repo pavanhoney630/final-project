@@ -1,27 +1,30 @@
 const Response = require("../../models/FormModel/FormResponse.model");
 const Form = require("../../models/FormModel/form.model");
 
-// --- Create Response (count view) ---
 const createResponse = async (req, res) => {
   try {
     const { formId } = req.params;
 
-    // Check form exists
     const form = await Form.findById(formId);
     if (!form) return res.status(404).json({ message: "Form not found" });
 
-    // Create new response entry with +1 view
+    // Create a response document
     const response = new Response({
       formId,
-      viewCount: 1,
+      viewed: true,
       answers: {}
     });
-
     await response.save();
+
+    // Increment views count in form
+    form.views += 1;
+    await form.save();
 
     return res.status(201).json({
       success: true,
-      responseId: response._id
+      message: "Form viewed successfully",
+      responseId: response._id,
+      views: form.views
     });
   } catch (error) {
     console.error("Error creating response:", error);
@@ -29,7 +32,6 @@ const createResponse = async (req, res) => {
   }
 };
 
-// --- Mark as Started ---
 const markStarted = async (req, res) => {
   try {
     const { responseId } = req.params;
@@ -37,17 +39,29 @@ const markStarted = async (req, res) => {
     const response = await Response.findById(responseId);
     if (!response) return res.status(404).json({ message: "Response not found" });
 
-    response.startCount += 1;
-    await response.save();
+    const form = await Form.findById(response.formId);
+    if (!form) return res.status(404).json({ message: "Form not found" });
 
-    res.status(200).json({ success: true, message: "Marked as started" });
+    if (!response.started) {
+      response.started = true;
+      await response.save();
+
+      // Increment starts count in Form
+      form.starts += 1;
+      await form.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Form started successfully",
+      starts: form.starts
+    });
   } catch (error) {
     console.error("Error marking start:", error);
     res.status(500).json({ message: "Failed to mark start" });
   }
 };
 
-// --- Submit Response (store answers + calculate completionRate) ---
 const submitResponse = async (req, res) => {
   try {
     const { responseId } = req.params;
@@ -56,19 +70,38 @@ const submitResponse = async (req, res) => {
     const response = await Response.findById(responseId);
     if (!response) return res.status(404).json({ message: "Response not found" });
 
-    // Save answers & submission timestamp
+    // Save answers
     response.answers = answers;
     response.submittedAt = new Date();
 
-    // Calculate completion rate
-    response.completionRate =
-      response.startCount > 0
-        ? Math.round((1 / response.startCount) * 100)
-        : 100;
+    // Check completion (all inputs filled)
+    const form = await Form.findById(response.formId);
+    if (!form) return res.status(404).json({ message: "Form not found" });
 
+    const totalInputs = form.inputs.length;
+    const answeredInputs = Object.values(answers).filter(
+      v => v !== "" && v !== null && v !== 0
+    ).length;
+
+    response.completed = answeredInputs === totalInputs;
     await response.save();
 
-    res.status(200).json({ success: true, message: "Response submitted" });
+    // 🔹 Recalculate completion ratio (global, not member-based)
+    const allResponses = await Response.find({ formId: form._id });
+    const completedResponses = allResponses.filter(r => r.completed).length;
+    const totalResponses = allResponses.length;
+
+    form.completionRatio =
+      totalResponses === 0 ? 0 : Math.round((completedResponses / totalResponses) * 100);
+
+    await form.save();
+
+    res.status(200).json({
+      success: true,
+      completionRatio: form.completionRatio,
+      completed: response.completed
+    });
+
   } catch (error) {
     console.error("Error submitting response:", error);
     res.status(500).json({ message: "Failed to submit response" });

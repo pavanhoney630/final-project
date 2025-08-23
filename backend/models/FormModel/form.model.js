@@ -39,7 +39,17 @@ const formSchema = new Schema(
       default: "light",
     },
 
-   
+    // Analytics
+    views: { type: Number, default: 0 },
+    starts: { type: Number, default: 0 },
+    completionRatio: { type: Number, default: 0 },
+    responses: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: "User" },
+        answers: { type: Schema.Types.Mixed }, // store responses as object
+        completed: { type: Boolean, default: false },
+      },
+    ],
 
     owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },

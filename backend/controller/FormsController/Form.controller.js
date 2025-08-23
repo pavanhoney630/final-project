@@ -5,8 +5,8 @@ const nodemailer = require('nodemailer')
 // --- Create Form inside a Folder of a Workspace ---
 const createForm = async (req, res) => {
   try {
-    const {workspaceId, folderId} = req.params
-    const { formName, bubbles, inputs,  } = req.body;
+    const { workspaceId, folderId } = req.params;
+    const { formName, bubbles, inputs } = req.body;
 
     if (!formName) {
       return res.status(400).json({ message: "Form name is required" });
@@ -16,29 +16,18 @@ const createForm = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized: user not found" });
     }
 
-    // --- Always treat bubbles & inputs as arrays ---
-    const bubblesArray = Array.isArray(bubbles) ? bubbles : (bubbles ? [bubbles] : []);
-    const inputsArray = Array.isArray(inputs) ? inputs : (inputs ? [inputs] : []);
-
-    // --- Generate labels for bubbles ---
+    // --- Prepare bubbles ---
+    const bubblesArray = Array.isArray(bubbles) ? bubbles : bubbles ? [bubbles] : [];
     const bubbleCounts = {};
-    const formattedBubbles = bubblesArray.map((bubble) => {
+    const formattedBubbles = bubblesArray.map(bubble => {
       bubbleCounts[bubble.type] = (bubbleCounts[bubble.type] || 0) + 1;
 
       let defaultContent = "";
       switch (bubble.type) {
-        case "text":
-          defaultContent = "Default text message";
-          break;
-        case "image":
-          defaultContent = "https://via.placeholder.com/300x200.png?text=Image";
-          break;
-        case "video":
-          defaultContent = "https://www.w3schools.com/html/mov_bbb.mp4";
-          break;
-        case "gif":
-          defaultContent = "https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif";
-          break;
+        case "text": defaultContent = "Default text message"; break;
+        case "image": defaultContent = "https://via.placeholder.com/300x200.png?text=Image"; break;
+        case "video": defaultContent = "https://www.w3schools.com/html/mov_bbb.mp4"; break;
+        case "gif": defaultContent = "https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif"; break;
       }
 
       return {
@@ -48,11 +37,11 @@ const createForm = async (req, res) => {
       };
     });
 
-    // --- Generate labels for inputs ---
+    // --- Prepare inputs ---
+    const inputsArray = Array.isArray(inputs) ? inputs : inputs ? [inputs] : [];
     const inputCounts = {};
-    const formattedInputs = inputsArray.map((input) => {
+    const formattedInputs = inputsArray.map(input => {
       inputCounts[input.type] = (inputCounts[input.type] || 0) + 1;
-
       return {
         type: input.type,
         label: `${input.type.charAt(0).toUpperCase() + input.type.slice(1)} ${inputCounts[input.type]}`,
@@ -60,59 +49,85 @@ const createForm = async (req, res) => {
         options: input.options || [],
       };
     });
- 
-    // --- Create the Form ---
+
+    // --- Find workspace and members ---
+    const workspace = await Workspace.findById(workspaceId)
+      .populate("owner", "_id email")
+      .populate("members.user", "_id email");
+
+    if (!workspace) return res.status(404).json({ message: "Workspace not found" });
+
+    const isOwner = workspace.owner._id.toString() === req.user.id;
+    const isMember = workspace.members.some(
+      m => (m.user && m.user._id.toString() === req.user.id) || m.email === req.user.email
+    );
+
+    if (!isOwner && !isMember) return res.status(403).json({ message: "No access to this workspace" });
+
+    const folder = workspace.folders.id(folderId);
+    if (!folder) return res.status(404).json({ message: "Folder not found in workspace" });
+
+    // --- Initialize empty answers structure based on form inputs ---
+    const createEmptyAnswers = () => {
+      const obj = {};
+      formattedInputs.forEach(input => {
+        switch(input.type) {
+          case "text":
+          case "email":
+          case "phone":
+          case "date":
+          case "button":
+            obj[input.label] = ""; break;
+          case "number":
+          case "rating":
+            obj[input.label] = 0; break;
+          default:
+            obj[input.label] = null;
+        }
+      });
+      return obj;
+    };
+
+    // --- Initialize responses for each member ---
+    const responses = workspace.members.map(m => ({
+      user: m.user ? m.user._id : null,
+      answers: createEmptyAnswers(),
+      completed: false
+    }));
+
+    // Include owner as well
+    responses.push({ user: workspace.owner._id, answers: createEmptyAnswers(), completed: false });
+
+    // --- Create the form ---
     const newForm = new Form({
       formName,
       bubbles: formattedBubbles,
       inputs: formattedInputs,
       owner: req.user.id,
+      responses,
+      views: 0,
+      starts: 0,
+      completionRatio: 0
     });
 
     await newForm.save();
 
-    // --- Attach Form to Workspace Folder ---
-    const workspace = await Workspace.findOne({ _id: workspaceId })
-  .populate("owner", "_id email")
-  .populate("members.user", "_id email");
-
-if (!workspace) {
-  return res.status(404).json({ message: "Workspace not found" });
-}
-
-// Check if user is owner or member
-const isOwner = workspace.owner._id.toString() === req.user.id;
-const isMember = workspace.members.some(
-  (m) => (m.user && m.user._id.toString() === req.user.id) || m.email === req.user.email
-);
-
-if (!isOwner && !isMember) {
-  return res.status(403).json({ message: "You don’t have access to this workspace" });
-}
-
-
-const folder = workspace.folders.id(folderId);
-if (!folder) {
-  return res.status(404).json({ message: "Folder not found in this workspace" });
-}
-
-
+    // --- Add form to folder ---
     folder.forms.push(newForm._id);
     await workspace.save();
 
     return res.status(201).json({
       success: true,
       message: "Form created successfully inside folder",
-      form: newForm,
+      form: newForm
     });
+
   } catch (error) {
     console.error("Error creating form:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to create form",
-    });
+    return res.status(500).json({ success: false, message: "Failed to create form" });
   }
 };
+
 
 const shareForm = async (req, res) => {
   try {

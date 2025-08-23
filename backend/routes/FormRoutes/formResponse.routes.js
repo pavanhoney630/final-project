@@ -6,13 +6,13 @@ const {createResponse,markStarted,submitResponse,exportResponses} = require('../
 const {authToken} = require('../../middleware/authMiddleware')
 
 //create response for view count
-router.post('/create/response/:formId',authToken,createResponse)
+router.post('/create/response/:formId',createResponse)
 
 //mark as started
-router.patch('/start/:responseId',authToken,markStarted);
+router.patch('/start/:responseId',markStarted);
 
 //Track submitted answers
-router.patch('/submitanswers/:responseId',authToken,submitResponse);
+router.patch('/submitanswers/:responseId',submitResponse);
 
 router.get('/exportResponses/:responseId',authToken,exportResponses)
 
