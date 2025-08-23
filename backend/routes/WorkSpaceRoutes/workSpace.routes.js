@@ -8,19 +8,23 @@ const {
   createWorkspaceOnLogin,
   getAllWorkspaces,
   shareWorkspace,
-  workspaceById
+  workspaceById,
+  addWorkspaceToUser
 } = require("../../controller/WorkSpace/workSpace.controller");
 
 // Create workspace on login (only once per user)
 router.post("/create-on-login/:userId", authToken,createWorkspaceOnLogin);
 
 // Get all workspaces for dropdown (owned + shared)
-router.get("/getAllWorkSpaces/:userId", authToken,getAllWorkspaces);
+router.get("/getAllWorkSpaces", authToken,getAllWorkspaces);
 
 // Share workspace with another user
 router.post("/WorkSpaceshare/:workspaceId", authToken,shareWorkspace);
 
 //WorkSpaceById
 router.get('/:workspaceId',authToken,workspaceById)
+
+//add workspace
+router.post('/addworkspace/:workspaceId',authToken,addWorkspaceToUser)
 
 module.exports = router;

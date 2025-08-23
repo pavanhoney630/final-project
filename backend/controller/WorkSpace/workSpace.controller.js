@@ -13,9 +13,10 @@ const createWorkspaceOnLogin = async (req, res) => {
     const user = await User.findById(userId);
 
 
-    if (!req.user.id|| req.user._id) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!req.user || !req.user.id) {
+  return res.status(404).json({ message: "User not found" });
+}
+
 
     // Check if workspace already exists
     let workspace = await Workspace.findOne({ owner: user._id });
@@ -42,31 +43,36 @@ const createWorkspaceOnLogin = async (req, res) => {
   }
 };
 
-/**
- * Get all workspaces for dropdown (owned + shared)
- */
+
 const getAllWorkspaces = async (req, res) => {
   try {
-    const { userId } = req.params; // logged-in userId
-    const user = await User.findById(userId);
+    if (!req.user) return res.status(404).json({ message: "User not found" });
 
-    if (!req.user.id|| req.user._id) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    // Get the logged-in user from DB
+    const currentUser = await User.findById(req.user.id);
+    if (!currentUser) return res.status(404).json({ message: "Logged-in user not found" });
 
+    // Fetch workspaces where user is owner OR member (shared)
     const workspaces = await Workspace.find({
       $or: [
-        { owner: user._id },
-        { "members.email": user.email },
+        { owner: currentUser._id }, // owned workspaces
+        { "members.user": currentUser._id }, // shared workspaces
+        { "members.email": currentUser.email } // fallback by email if userId not set
       ],
     }).populate("owner", "username email");
 
-    res.status(200).json({ success:true, message:'Workspaces fetched successfully ',workspaces });
+    res.status(200).json({
+      success: true,
+      message: "All accessible workspaces fetched successfully",
+      workspaces,
+    });
+
   } catch (error) {
     console.error("Error fetching workspaces:", error);
-    res.status(500).json({ message: "Failed to fecth All Workspaces" });
+    res.status(500).json({ message: "Failed to fetch workspaces" });
   }
 };
+
 
 const shareWorkspace = async (req, res) => {
   try {
@@ -197,11 +203,63 @@ const workspaceById = async (req, res) => {
   }
 };
 
+const addWorkspaceToUser = async (req, res) => {
+  try {
+    const { workspaceId } = req.params;
+    const { targetUserId, access } = req.body; // access: "read" or "write"
+
+    if (!req.user) return res.status(404).json({ message: "User not found" });
+    if (!["read", "write"].includes(access)) {
+      return res.status(400).json({ message: "Invalid access type" });
+    }
+
+    const workspace = await Workspace.findById(workspaceId);
+    if (!workspace) return res.status(404).json({ message: "Workspace not found" });
+
+    // Only owner can add workspace to another user
+    if (workspace.owner.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Only the owner can add this workspace to another user" });
+    }
+
+    const targetUser = await User.findById(targetUserId);
+    if (!targetUser) return res.status(404).json({ message: "Target user not found" });
+
+    // Check if already added
+    const existingMember = workspace.members.find(
+      (m) => m.user && m.user.toString() === targetUserId
+    );
+
+    if (existingMember) {
+      existingMember.access = access; // update access if already added
+    } else {
+      workspace.members.push({
+        user: targetUser._id,
+        email: targetUser.email,
+        access,
+      });
+    }
+
+    await workspace.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Workspace added to user ${targetUser.username} successfully`,
+      workspace,
+    });
+
+  } catch (error) {
+    console.error("Error adding workspace to user:", error);
+    res.status(500).json({ message: "Failed to add workspace to user" });
+  }
+};
+
+
 
 
 module.exports = {
   createWorkspaceOnLogin,
   getAllWorkspaces,
   shareWorkspace,
-  workspaceById
+  workspaceById,
+  addWorkspaceToUser
 };
