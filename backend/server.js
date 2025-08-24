@@ -12,9 +12,10 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB Connected");
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
+   if (process.env.NODE_ENV !== "production") {
+  app.listen(5000, () => console.log("Local server running on 5000"));
+}
+
   })
   .catch((err) => {
     console.error("❌ DB Connection Error:", err);
