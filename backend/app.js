@@ -1,16 +1,19 @@
 const express = require("express");
 const cors = require("cors");
 
-
 const app = express();
+
 const corsOptions = {
-  origin: "https://final-project-api-dun.vercel.app", // your frontend domain
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: "https://final-project-api-dun.vercel.app", // frontend domain
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
+
+// ✅ handle preflight requests
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
@@ -39,6 +42,5 @@ app.use('/api/form', FormRoutes)
 app.use('/api/theme',ThemeRoutes)
 app.use('/api/response',ResponseRoutes)
 app.use('/api/analytics',FromAnalyticsRoutes)
-
 
 module.exports = app;
