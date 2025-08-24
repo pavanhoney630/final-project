@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/UserModel/UserAuth.model");
+const Workspace = require("../../models/WorkSpaceModel/workSpace.model");
 
 // ✅ User Signup
 const signup = async (req, res) => {
@@ -86,8 +87,24 @@ const login = async (req, res) => {
       { expiresIn: "1d" }
     );
 
+    // 🔑 Check if workspace already exists
+    let workspace = await Workspace.findOne({ owner: user._id });
+
+    if (!workspace) {
+      // Auto-create new workspace if not found
+      workspace = new Workspace({
+        workspaceName: `${user.username}'s workspace`, // naming convention
+        owner: user._id,
+        folders: [],
+        members: [],
+      });
+
+      await workspace.save();
+    }
+
+    // ✅ Send back login + workspace together
     res.status(200).json({
-        sucess:true,
+      success: true,
       message: "Login successful",
       token,
       user: {
@@ -95,12 +112,14 @@ const login = async (req, res) => {
         username: user.username,
         email: user.email,
       },
+      workspace, // 👈 this ensures frontend immediately has workspace
     });
   } catch (error) {
     console.error("Login Error:", error);
-    res.status(500).json({ message: "Failed t0 login User" });
+    res.status(500).json({ message: "Failed to login User" });
   }
 };
+
 
 // ✅ Update User
 const updateUser = async (req, res) => {
