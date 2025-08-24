@@ -3,9 +3,15 @@ const cors = require("cors");
 
 
 const app = express();
+const corsOptions = {
+  origin: "https://final-project-api-dun.vercel.app", // your frontend domain
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+};
 
-// Middleware
-app.use(cors({ origin: "*" }));
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 //User Routes
