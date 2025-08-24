@@ -103,36 +103,30 @@ const login = async (req, res) => {
 };
 
 // ✅ Update User
-// ✅ Update User
 const updateUser = async (req, res) => {
   try {
-    const userId = req.user || req.user.id; // comes from auth middleware (decoded JWT)
+    const userId = typeof req.user === "string" ? req.user : req.user.id; // FIXED
     const { username, email, oldPassword, newPassword } = req.body;
 
     // Find the user
     const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Update username if provided
+    // Update username
     if (username) user.username = username;
 
-    // Update email if provided (check duplicate)
+    // Update email
     if (email && email !== user.email) {
       const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: "Email already in use" });
-      }
+      if (existingUser) return res.status(400).json({ message: "Email already in use" });
       user.email = email;
     }
 
-    // Update password if provided
+    // Update password
     if (oldPassword && newPassword) {
       const isMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: "Old password is incorrect" });
-      }
+      if (!isMatch) return res.status(400).json({ message: "Old password is incorrect" });
+
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(newPassword, salt);
     }
@@ -154,6 +148,7 @@ const updateUser = async (req, res) => {
     res.status(500).json({ message: "Failed to update user" });
   }
 };
+
 
 
 module.exports = { signup, login, updateUser };
