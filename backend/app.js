@@ -34,7 +34,7 @@ const FromAnalyticsRoutes = require('./routes/FormRoutes/formAnalytics.routes')
 app.use("/api/auth", userAuthRoutes);
 
 //workspace
-app.use('/api/workSapce',WorkSpaceRoutes)
+app.use('/api/workspace',WorkSpaceRoutes)
 app.use('/api/folder',FolderRoutes)
 
 //Form
