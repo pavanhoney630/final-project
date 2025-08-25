@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
  import Login from "./components/auth/LoginPage.jsx";
 import Signup from "./components/auth/SignupPage.jsx";
-// import Profile from "./components/auth/Profile.js";
+ import DashBoard from "./components/Workspace/DashBoard.jsx";
 import Settings from './components/auth/SettingsPage.jsx';
 import LandingPage from '../src/components/Landing/LandingPage.js';
 // import Form from '../src/components/auth/Form.js';
@@ -19,6 +19,7 @@ const App = () => {
           <Route path="/signup" element={<Signup/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/settings" element={<Settings/>}/>
+          <Route path="/dashboard" element={<DashBoard/>}/>
          
 
         </Routes>

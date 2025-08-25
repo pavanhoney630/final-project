@@ -9,6 +9,7 @@ import Ellipse2 from "../Images/Ellipse 2.png";
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const apiUrl =
@@ -23,22 +24,27 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     try {
       const response = await axios.post(`${apiUrl}/api/auth/login`, formData);
-      console.log("res",response.data)
+      console.log("res", response.data);
 
-      if (response.data.sucess) {
+      if (response.data.success) { // ✅ fixed typo
         // Save token, email, username to localStorage
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("email", response.data.user.email);
         localStorage.setItem("username", response.data.user.username);
 
-        // Redirect to dashboard
-        navigate("/dashboard");
+        setSuccess("Login successful! Redirecting to dashboard...");
+
+        
+       navigate("/dashboard", { replace: true }); 
+      } else {
+        setError(response.data.message || "Login failed");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong");
+      setError(err.response?.data?.message || "Network error try after sometime");
     }
   };
 
@@ -64,7 +70,9 @@ const Login = () => {
       {/* Login Form */}
       <div className="card p-5 shadow" style={{ maxWidth: "400px", width: "90%", backgroundColor:"green" }}>
         <h2 className="text-center mb-4 text-white">Log In</h2>
+        
         {error && <div className="alert alert-danger">{error}</div>}
+        {success && <div className="alert alert-success">{success}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -96,7 +104,7 @@ const Login = () => {
           </button>
         </form>
 
-        <p className="text-center mt-3 text-Black">
+        <p className="text-center mt-3 text-white">
           Don’t have an account? <a href="/signup">Register now</a>
         </p>
       </div>
