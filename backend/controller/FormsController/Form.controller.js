@@ -128,6 +128,144 @@ const createForm = async (req, res) => {
   }
 };
 
+// --- Get Forms inside selected folder
+const getFormsInFolder = async (req, res) => {
+  try {
+    const { workspaceId, folderId } = req.params;
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized: user not found" });
+    }
+
+    // --- Find workspace and populate forms ---
+    const workspace = await Workspace.findById(workspaceId)
+      .populate("owner", "_id email")
+      .populate("members.user", "_id email")
+      .populate({
+        path: "folders.forms",
+        model: "Form",
+        select: "formName bubbles inputs owner createdAt" // ✅ only fetch what you need
+      });
+
+    if (!workspace) return res.status(404).json({ message: "Workspace not found" });
+
+    const isOwner = workspace.owner._id.toString() === req.user.id;
+    const isMember = workspace.members.some(
+      m => (m.user && m.user._id.toString() === req.user.id) || m.email === req.user.email
+    );
+
+    if (!isOwner && !isMember) {
+      return res.status(403).json({ message: "No access to this workspace" });
+    }
+
+    const folder = workspace.folders.id(folderId);
+    if (!folder) return res.status(404).json({ message: "Folder not found in workspace" });
+
+    // --- Return forms inside the folder ---
+    return res.status(200).json({
+      success: true,
+      message: "Forms fetched successfully",
+      forms: folder.forms // this already contains formName, bubbles, inputs
+    });
+
+  } catch (error) {
+    console.error("Error fetching forms in folder:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch forms" });
+  }
+};
+
+// --- Get single form by ID (with bubbles, inputs, theme, etc.)
+const getFormById = async (req, res) => {
+  try {
+    const { workspaceId, folderId, formId } = req.params;
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized: user not found" });
+    }
+
+    // --- Find workspace and validate access ---
+    const workspace = await Workspace.findById(workspaceId)
+      .populate("owner", "_id email")
+      .populate("members.user", "_id email");
+
+    if (!workspace) return res.status(404).json({ message: "Workspace not found" });
+
+    const isOwner = workspace.owner._id.toString() === req.user.id;
+    const isMember = workspace.members.some(
+      m => (m.user && m.user._id.toString() === req.user.id) || m.email === req.user.email
+    );
+    if (!isOwner && !isMember) {
+      return res.status(403).json({ message: "No access to this workspace" });
+    }
+
+    // --- Validate folder ---
+    const folder = workspace.folders.id(folderId);
+    if (!folder) return res.status(404).json({ message: "Folder not found in workspace" });
+
+    // --- Fetch form by ID ---
+    const form = await Form.findById(formId).select(
+      "formName bubbles inputs theme owner responses views starts completionRatio createdAt updatedAt"
+    );
+
+    if (!form) return res.status(404).json({ message: "Form not found" });
+
+    return res.status(200).json({
+      success: true,
+      message: "Form fetched successfully",
+      form
+    });
+  } catch (error) {
+    console.error("Error fetching form:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch form" });
+  }
+};
+
+
+const editFormById = async (req, res) => {
+  try {
+    const { workspaceId, folderId, formId } = req.params;
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized: user not found" });
+    }
+
+    // --- Find workspace and validate access ---
+    const workspace = await Workspace.findById(workspaceId)
+      .populate("owner", "_id email")
+      .populate("members.user", "_id email");
+
+    if (!workspace) return res.status(404).json({ message: "Workspace not found" });
+
+    const isOwner = workspace.owner._id.toString() === req.user.id;
+    const isMember = workspace.members.some(
+      m => (m.user && m.user._id.toString() === req.user.id) || m.email === req.user.email
+    );
+    if (!isOwner && !isMember) {
+      return res.status(403).json({ message: "No access to this workspace" });
+    }
+
+    // --- Validate folder ---
+    const folder = workspace.folders.id(folderId);
+    if (!folder) return res.status(404).json({ message: "Folder not found in workspace" });
+
+    // --- Fetch form by ID ---
+    const form = await Form.findById(formId).select(
+      "formName bubbles inputs theme owner responses views starts completionRatio createdAt updatedAt"
+    );
+
+    if (!form) return res.status(404).json({ message: "Form not found" });
+
+    return res.status(200).json({
+      success: true,
+      message: "Form fetched successfully",
+      form
+    });
+  } catch (error) {
+    console.error("Error fetching form:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch form" });
+  }
+};
+
 
 const shareForm = async (req, res) => {
   try {
@@ -223,4 +361,4 @@ const deleteForm = async (req, res) => {
 };
 
 
-module.exports = { createForm,deleteForm,shareForm };
+module.exports = { createForm,getFormsInFolder,getFormById,editFormById,deleteForm,shareForm };
