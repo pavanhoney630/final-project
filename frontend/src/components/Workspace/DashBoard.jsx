@@ -11,9 +11,12 @@ const Dashboard = () => {
   const [workspaces, setWorkspaces] = useState([]);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
   const [folders, setFolders] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [forms, setForms] = useState([]);
+  const [showFolderModal, setShowFolderModal] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
   const [folderName, setFolderName] = useState("");
-  const [folderContent, setFolderContent] = useState(null);
+  const [formName, setFormName] = useState("");
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
 
   const apiUrl =
     process.env.NODE_ENV === "production"
@@ -21,17 +24,14 @@ const Dashboard = () => {
       : process.env.REACT_APP_API_URL_DEV;
 
   const token = localStorage.getItem("token");
-  console.log("token",token)
 
-  // Fetch workspaces
+  // 🔹 Fetch workspaces
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
         const res = await axios.get(`${apiUrl}/api/workspace/getAllWorkSpaces`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("res",res)
-        console.log("token",token)
 
         setWorkspaces(res.data.workspaces || []);
 
@@ -58,7 +58,7 @@ const Dashboard = () => {
     localStorage.setItem("workspaceId", ws._id);
   };
 
-  // Fetch folders
+  // 🔹 Fetch folders
   const fetchFolders = async (workspaceId) => {
     if (!workspaceId) return;
     try {
@@ -76,7 +76,20 @@ const Dashboard = () => {
     if (currentWorkspace) fetchFolders(currentWorkspace._id);
   }, [currentWorkspace]);
 
-  // Create folder
+  // 🔹 Fetch forms of a folder
+  const fetchForms = async (workspaceId, folderId) => {
+    try {
+      const res = await axios.get(
+        `${apiUrl}/api/form/getforms/${workspaceId}/${folderId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setForms(res.data.forms || []);
+    } catch (error) {
+      console.error("Error fetching forms", error);
+    }
+  };
+
+  // 🔹 Create folder
   const handleCreateFolder = async () => {
     try {
       await axios.post(
@@ -84,15 +97,15 @@ const Dashboard = () => {
         { folderName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setShowModal(false);
+      setShowFolderModal(false);
       setFolderName("");
-      fetchFolders(currentWorkspace._id); // refresh immediately
+      fetchFolders(currentWorkspace._id);
     } catch (error) {
       console.error("Error creating folder", error);
     }
   };
 
-  // Delete folder
+  // 🔹 Delete folder
   const handleDeleteFolder = async (folderId) => {
     if (!currentWorkspace) return;
     try {
@@ -100,9 +113,48 @@ const Dashboard = () => {
         `${apiUrl}/api/folder/${currentWorkspace._id}/${folderId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchFolders(currentWorkspace._id); // refresh immediately
+      fetchFolders(currentWorkspace._id);
+      setForms([]); // clear forms
     } catch (error) {
       console.error("Error deleting folder", error);
+    }
+  };
+
+  
+  // 🔹 Create form (redirect instead of API call)
+// 🔹 Create form (API call then redirect)
+const handleCreateForm = async () => {
+  if (!formName || !selectedFolderId || !currentWorkspace) return;
+
+  try {
+    const res = await axios.post(
+      `${apiUrl}/api/form/createForm/${currentWorkspace._id}/${selectedFolderId}`,
+      { formName }, // only name at first
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    if (res.data.success) {
+      const newFormId = res.data.form._id; // ✅ use real MongoDB ID
+      navigate(`/form/${currentWorkspace._id}/${selectedFolderId}/${newFormId}`);
+      setShowFormModal(false);
+      setFormName("");
+    }
+  } catch (error) {
+    console.error("Error creating form:", error);
+  }
+};
+
+
+  // 🔹 Delete form
+  const handleDeleteForm = async (formId) => {
+    try {
+      await axios.delete(
+        `${apiUrl}/api/form/deleteform/${formId}/${selectedFolderId}/${currentWorkspace._id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchForms(currentWorkspace._id, selectedFolderId);
+    } catch (error) {
+      console.error("Error deleting form", error);
     }
   };
 
@@ -117,80 +169,95 @@ const Dashboard = () => {
       <div className="d-flex justify-content-center mb-4">
         <Dropdown>
           <Dropdown.Toggle variant="secondary">
-  {currentWorkspace ? currentWorkspace.workspaceName : "Select Workspace"}
-</Dropdown.Toggle>
+            {currentWorkspace ? currentWorkspace.workspaceName : "Select Workspace"}
+          </Dropdown.Toggle>
 
-<Dropdown.Menu>
-  {workspaces.map((ws) => (
-    <Dropdown.Item key={ws._id} onClick={() => handleWorkspaceSelect(ws)}>
-      {ws.workspaceName}
-    </Dropdown.Item>
-  ))}
-  <Dropdown.Divider />
-  <Dropdown.Item onClick={() => navigate("/settings")}>
-    Settings
-  </Dropdown.Item>
-  <Dropdown.Item onClick={handleLogout} className="text-warning">
-  Log Out
-</Dropdown.Item>
-</Dropdown.Menu>
-
+          <Dropdown.Menu>
+            {workspaces.map((ws) => (
+              <Dropdown.Item key={ws._id} onClick={() => handleWorkspaceSelect(ws)}>
+                {ws.workspaceName}
+              </Dropdown.Item>
+            ))}
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={() => navigate("/settings")}>Settings</Dropdown.Item>
+            <Dropdown.Item onClick={handleLogout} className="text-warning">
+              Log Out
+            </Dropdown.Item>
+          </Dropdown.Menu>
         </Dropdown>
       </div>
 
-      {/* Folders + Create Button + Typebot Image in Row */}
-<div 
-  className="d-flex flex-column gap-4" 
-  style={{ minHeight: "70vh", justifyContent: "center" ,alignItems:"center" }}
+      {/* Folders + Create Button */}
+      <div className="d-flex align-items-center gap-3 mb-4 justify-content-center">
+        <Button variant="secondary" onClick={() => setShowFolderModal(true)}>
+          <HiOutlineFolderAdd className="me-2" /> Create Folder
+        </Button>
+
+        {folders.map((folder) => (
+          <Button
+            key={folder._id}
+            variant="outline-light"
+            className="d-flex align-items-center gap-2"
+            onClick={() => {
+              localStorage.setItem("folderId", folder._id);
+              setSelectedFolderId(folder._id);
+              setShowFormModal(true); // open modal to create form
+              fetchForms(currentWorkspace._id, folder._id);
+            }}
+          >
+            {folder.folderName}
+            <FaRegTrashAlt
+              className="text-danger"
+              style={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteFolder(folder._id);
+              }}
+            />
+          </Button>
+        ))}
+      </div>
+
+      {/* TypeBot Image + Forms */}
+      <div className="d-flex flex-wrap gap-4 justify-content-center">
+        {/* TypeBot Image */}
+        <div
+          className="card bg-dark border-0 text-center position-relative"
+          style={{ width: "12rem" }}
+        >
+          <img src={TypeBotImage} alt="TypeBot" className="card-img-top" />
+        </div>
+
+        {/* Forms */}
+        {forms.map((form) => (
+          <div
+  key={form._id}
+  className="card bg-dark text-light border-secondary position-relative"
+  style={{ width: "12rem", cursor: "pointer" }}
+ onClick={() =>
+  navigate(`/form/${currentWorkspace._id}/${selectedFolderId}/${form._id}`)
+}
+
 >
-  {/* Create Folder + Folders Row */}
-  <div className="d-flex align-items-center gap-3 mb-4">
-    <Button variant="secondary" onClick={() => setShowModal(true)}>
-      <HiOutlineFolderAdd className="me-2" /> Create Folder
-    </Button>
-
-    {folders.map((folder) => (
-      <Button
-        key={folder._id}
-        variant="outline-light"
-        className="d-flex align-items-center gap-2"
-        onClick={() => localStorage.setItem("folderId", folder._id)}
-      >
-        {folder.folderName}
-        <FaRegTrashAlt
-          className="text-danger"
-          style={{ cursor: "pointer" }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDeleteFolder(folder._id);
-          }}
-        />
-      </Button>
-    ))}
-  </div>
-
-  {/* TypeBot Image BELOW Create Folder button (aligned left) */}
-  <div className="card bg-dark border-0 text-center" style={{ width: "12rem" , marginRight:"120px", marginLeft:"-230px"}}>
-    <img src={TypeBotImage} alt="TypeBot" className="card-img-top" />
-    <div className="card-body">
-      
-    </div>
+  {/* Delete Icon */}
+  <FaRegTrashAlt
+    className="text-danger position-absolute"
+    style={{ top: "8px", right: "8px", cursor: "pointer" }}
+    onClick={(e) => {
+      e.stopPropagation(); // prevent card click when deleting
+      handleDeleteForm(form._id);
+    }}
+  />
+  <div className="card-body text-center">
+    <h6 className="card-title">{form.formName}</h6>
   </div>
 </div>
 
-
-      {/* Folder Content */}
-      {folderContent && (
-        <div className="mt-4">
-          <h5>Folder Content</h5>
-          <pre className="bg-secondary p-3 rounded">
-            {JSON.stringify(folderContent, null, 2)}
-          </pre>
-        </div>
-      )}
+        ))}
+      </div>
 
       {/* Create Folder Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal show={showFolderModal} onHide={() => setShowFolderModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Create New Folder</Modal.Title>
         </Modal.Header>
@@ -210,7 +277,34 @@ const Dashboard = () => {
           <Button variant="primary" onClick={handleCreateFolder}>
             Done
           </Button>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={() => setShowFolderModal(false)}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Create Form Modal */}
+      <Modal show={showFormModal} onHide={() => setShowFormModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Create New Form</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Control
+                type="text"
+                placeholder="Enter form name"
+                value={formName}
+                onChange={(e) => setFormName(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCreateForm}>
+            Done
+          </Button>
+          <Button variant="secondary" onClick={() => setShowFormModal(false)}>
             Cancel
           </Button>
         </Modal.Footer>
